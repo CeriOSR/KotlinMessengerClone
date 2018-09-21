@@ -50,11 +50,6 @@ class NewMessageActivity : AppCompatActivity() {
                     recyclerview_newmessage.adapter = adapter
                 }
 
-//                adapter.setOnItemClickListener {
-//                    val intent = Intent(this, ChatLogActivity::class.java )
-//                    startActivity(intent)
-//
-//                }
                 adapter.setOnItemClickListener { item, view ->
 
                     //cast item into a UserItem
@@ -88,13 +83,3 @@ class UserItem(val user: User): Item<ViewHolder>() {
         return R.layout.user_row_newmessage
     }
 }
-
-
-
-//this is tedious so we use Groupie 3rd party library
-
-//class CustomAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder> {
-//    override fun onBindViewHolder(p0: RecyclerView.ViewHolder, p1: Int) {
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-//    }
-////}

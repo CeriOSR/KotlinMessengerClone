@@ -3,17 +3,29 @@ package com.example.reycerio.kotlinmessenger.messages
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.example.reycerio.kotlinmessenger.R
+import com.example.reycerio.kotlinmessenger.models.User
 import com.example.reycerio.kotlinmessenger.registration.MainActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class LatestMessagesActivity : AppCompatActivity() {
+
+    companion object {
+        var currentUser: User? = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_latest_messages)
+
+        fetchCurrentUser()
 
         verifyIfUserIsLoggedIn()
 
@@ -40,6 +52,21 @@ class LatestMessagesActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun fetchCurrentUser() {
+        var uid = FirebaseAuth.getInstance().uid.toString()
+        var ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                currentUser = p0.getValue(User::class.java)
+                Log.d("Chatlog", "$currentUser?.username")
+            }
+        })
     }
 
     private fun verifyIfUserIsLoggedIn() {
