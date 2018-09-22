@@ -43,12 +43,18 @@ class ChatLogActivity : AppCompatActivity() {
         send_button_chat_log.setOnClickListener{
             Log.d(TAG, "Attempt to send message to print on click")
             performSendMessage()
+            //clears the text box
+            message_edit_text_chat_log.text.clear()
+            //scrolls to bottom
+            recyclerview_chat_log.scrollToPosition(adapter.itemCount - 1)
         }
 
     }
 
     private fun listenForMessages() {
-        val reference = FirebaseDatabase.getInstance().getReference("/messages")
+        val fromId = FirebaseAuth.getInstance().uid
+        val toId = toUser?.uid
+        val reference = FirebaseDatabase.getInstance().getReference("/user-messages/$fromId/$toId")
         reference.addChildEventListener(object : ChildEventListener {
 
 
@@ -100,10 +106,16 @@ class ChatLogActivity : AppCompatActivity() {
         //safe unwrapping
         if (fromId == null) return
 
-        val reference = FirebaseDatabase.getInstance().getReference("/messages").push()
+//        val reference = FirebaseDatabase.getInstance().getReference("/messages").push()
+        val reference = FirebaseDatabase.getInstance().getReference("/user-messages/$fromId/$toId").push()
+        val toReference = FirebaseDatabase.getInstance().getReference("/user-messages/$toId/$fromId").push()
+
         val chatMessage = ChatMessage(reference.key!!, text, fromId, toId, System.currentTimeMillis() / 1000)
         reference.setValue(chatMessage).addOnSuccessListener {
             Log.d(TAG, "saved our chat message: ${reference.key}")
+        }
+        toReference.setValue(chatMessage).addOnSuccessListener {
+            Log.d(TAG,"saved message chat to To node: ${reference.key}")
         }
     }
 }
