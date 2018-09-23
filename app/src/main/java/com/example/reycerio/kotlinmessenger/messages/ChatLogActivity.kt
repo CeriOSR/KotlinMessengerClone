@@ -77,6 +77,7 @@ class ChatLogActivity : AppCompatActivity() {
 
 
                 }
+                recyclerview_chat_log.scrollToPosition(adapter.itemCount - 1)
             }
 
             override fun onChildMoved(p0: DataSnapshot, p1: String?) {
@@ -117,6 +118,20 @@ class ChatLogActivity : AppCompatActivity() {
         toReference.setValue(chatMessage).addOnSuccessListener {
             Log.d(TAG,"saved message chat to To node: ${reference.key}")
         }
+
+
+        //dont use .push() so it doesnt create a uuid unlike the ones above.
+        val latestMessagesFromRef = FirebaseDatabase.getInstance().getReference("/latest-messages/$fromId/$toId")
+        latestMessagesFromRef.setValue(chatMessage).addOnSuccessListener {
+            Log.d(TAG, "message saved to latest-messages node")
+        }
+
+        val latestMessagesToRef = FirebaseDatabase.getInstance().getReference("/latest-messages/$toId/$fromId")
+        latestMessagesToRef.setValue(chatMessage).addOnSuccessListener {
+            Log.d(TAG, "message saved to latest-messages node")
+        }
+        recyclerview_chat_log.scrollToPosition(adapter.itemCount - 1)
+
     }
 }
 
